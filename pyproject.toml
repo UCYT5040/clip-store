@@ -8,6 +8,7 @@ dependencies = [
     "flask>=3.1.1",
     "flask-httpauth>=4.8.0",
     "glocaltokens>=0.7.6",
+    "isodate>=0.7.2",
     "numpy>=2.3.2",
     "opencv-python>=4.11.0.86",
     "python-dotenv>=1.1.1",
