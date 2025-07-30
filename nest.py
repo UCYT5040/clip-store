@@ -54,9 +54,9 @@ class Nest:
             with open("last_fetched.txt", "r") as f:
                 self.last_fetched = datetime.fromisoformat(f.read().strip())
         except FileNotFoundError:
-            self.last_fetched = datetime.now(UTC) - timedelta(hours=1)
+            self.last_fetched = datetime.now(UTC) - timedelta(hours=3)
         except ValueError:
-            self.last_fetched = datetime.now(UTC) - timedelta(hours=1)
+            self.last_fetched = datetime.now(UTC) - timedelta(hours=3)
         return self.last_fetched
 
     def _save_last_fetched(self):
@@ -142,7 +142,7 @@ class Nest:
 
     def _get_missing_video(self, device_id: str):
         end_time = datetime.now(UTC)
-        start_time = self.last_fetched or end_time - timedelta(hours=1)
+        start_time = self.last_fetched or end_time - timedelta(hours=3)
         print(start_time, end_time)
         event_data = self._get_events_between(start_time, end_time, device_id)
         print(event_data)
