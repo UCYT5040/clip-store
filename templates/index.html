@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Clip Store</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f4f4f4;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+
+        th {
+            background-color: #7da8c9;
+            color: white;
+        }
+
+        tr:nth-child(even) {
+            background-color: #f2f2f2;
+        }
+
+        img {
+            width: 100%;
+            height: auto;
+        }
+    </style>
+</head>
+<body>
+<table>
+    <thead>
+    <tr>
+        <th colspan="2">Clip Store</th>
+    </tr>
+    <tr>
+        <th>Key</th>
+        <th>Value</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr>
+        <td>User</td>
+        <td>{{ home_data.user }}</td>
+    </tr>
+    <tr>
+        <td>Home</td>
+        <td>{{ home_data.home }}</td>
+    </tr>
+    <tr>
+        <td>Address</td>
+        <td>{{ home_data.address }}</td>
+    </tr>
+    <tr>
+        <td>Device Count <small>(only includes cameras)</small></td>
+        <td>{{ home_data.devices|length }}</td>
+    </tr>
+    {% for device in home_data.devices %}
+        <tr>
+            <td>*</td>
+            <td>
+                {{ device.name }}
+            </td>
+        </tr>
+        <tr>
+        <td>#</td>
+        <td>{{ device.id }}</td>
+    {% endfor %}
+    </tbody>
+</table>
+{% for device in home_data.devices %}
+    <details>
+        <summary>{{ device.name }}</summary>
+        <table>
+            <thead>
+            <tr>
+                <th>Date</th>
+                <th>Duration</th>
+                <th>Thumbnail</th>
+                <th>Actions</th>
+                <th>Immunity <small>(will not delete from a batch delete)</small></th>
+            </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td colspan="5"><a href="{{ url_for('batch_delete', device_id=device.id) }}">Batch Delete</a></td>
+                </tr>
+            {% for clip_id, clip in device.clips.items() %}
+                <tr>
+                    <td><span class="date" data-timestamp="{{ clip.start_date }}">
+                        Please wait, loading date...
+                    </span></td>
+                    <td>{{ clip.duration }} seconds</td>
+                    <td>
+                        <img src="{{ url_for('clip', device_id=device.id, filename=clip.thumbnail) }}" alt="Thumbnail">
+                    </td>
+                    <td>
+                        <a href="{{ url_for('clip_player', device_id=device.id, filename=clip.video) }}">Open</a>
+                        <a href="{{ url_for('clip', device_id=device.id, filename=clip.video) }}">Download</a>
+                        <a href="{{ url_for('delete_clip', device_id=device.id, clip_id=clip_id) }}">Delete</a>
+                        <a href="{{ url_for('mark_immune', device_id=device.id, clip_id=clip_id) }}">
+                            {% if clip.immune %}
+                                Unmark&nbsp;Immunity
+                            {% else %}
+                                Mark&nbsp;Immunity
+                            {% endif %}
+                        </a>
+                    </td>
+                    <td>
+                        {% if clip.immune %}
+                            <span>Y</span>
+                        {% endif %}
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </details>
+{% endfor %}
+<script>
+    document.querySelectorAll('.date').forEach(function (element) {
+        const timestamp = element.getAttribute('data-timestamp');
+        const date = new Date(parseInt(timestamp) * 1000);
+        element.textContent = date.toLocaleString();
+    });
+</script>
+</body>
+</html>
