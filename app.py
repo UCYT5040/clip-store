@@ -66,7 +66,14 @@ def index():
                     home_data['devices'][index]['clips'][clip_id] = {}
                 home_data['devices'][index]['clips'][clip_id]['thumbnail'] = clip
                 print(f"Found thumbnail: {clip} for device {device['id']}")
-    print(home_data)
+        # Sort clips by start_date
+        home_data['devices'][index]['clips'] = dict(
+            sorted(home_data['devices'][index]['clips'].items(),
+                   key=lambda item: float(item[1]['start_date'] if 'start_date' in item[1] else 0),
+                   reverse=True  # Show most recent clips first
+                   )
+        )
+
     return render_template('index.html', user=auth.current_user(), home_data=home_data)
 
 
